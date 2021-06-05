@@ -1,0 +1,128 @@
+package cinema;
+
+import java.util.Scanner;
+
+public class Cinema {
+
+    public static void createCinemaHall(char[][] tab, int row, int seat) {
+
+        char app = 48;
+        char app2 = 48;
+
+        for (int i = 0; i < row + 1; i++) {
+            for (int j = 0; j < seat + 2; j++) {
+                if (i == 0 && j == 0) {
+                    tab[0][0] = ' ';
+                } else if (i == 0) {
+                    tab[0][j] = app;
+                } else if (j == 0) {
+                    tab[i][0] = app2;
+                } else {
+                    tab[i][j] = 'S';
+                }
+                app++;
+            }
+            app2++;
+        }
+    }
+
+    public static void showCinemaHall(char[][] tab, int row, int seat) {
+        System.out.println("cinema:");
+        for (int i = 0; i < row + 1; i++)
+            for (int j = 0; j < seat + 2; j++) {
+                if (j == seat + 1) {
+                    System.out.println();
+                } else System.out.print(tab[i][j] + " ");
+            }
+    }
+
+    public static void showStatistics(int tickets, int totalSeats, int income, int totalIncome) {
+        System.out.println("Number of purchased tickets: " + tickets);
+        double percentage = (100 * tickets) / (double) totalSeats;
+        System.out.printf("Percentage: %.2f", percentage);
+        System.out.println("%");
+        System.out.println("current income: $" + income);
+        System.out.println("Total income: $" + totalIncome);
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in); //scanner
+
+        int row, seat, x;
+        int tickets = 0;
+        int income = 0;
+        System.out.println("Enter the number of rows:");
+        row = sc.nextInt();
+        System.out.println("Enter the number of seats in each row:");
+        seat = sc.nextInt();
+
+        int totalIncome;
+        char[][] tab = new char[row + 1][seat + 2];
+        createCinemaHall(tab, row, seat); //first method
+        int totalSeats = row * seat;
+
+        if (totalSeats <= 60) {
+            totalIncome = totalSeats * 10;
+        } else {
+            totalIncome = row / 2 * seat * 10 + (row - row / 2) * seat * 8;
+        }
+
+        do {
+            System.out.println("1. Show the seats");
+            System.out.println("2. Buy a ticket");
+            System.out.println("3. Statistics");
+            System.out.println("0. Exit");
+            x = sc.nextInt();
+
+            switch (x) {
+                case 1:
+                    showCinemaHall(tab, row, seat); //second method
+                    break;
+
+                case 3:
+                    showStatistics(tickets, totalSeats, income, totalIncome);
+                    break;
+
+                case 2:
+                    boolean change = true;
+                    while (change) {
+                        System.out.println("Enter a row number:");
+                        int rowNumber = sc.nextInt();
+                        System.out.println("Enter a seat number in that row:");
+                        int seatNumber = sc.nextInt();
+
+                        if (rowNumber > row || seatNumber > seat || rowNumber < 1 || seatNumber < 1) {
+                            System.out.println("Wrong input!");
+                        } else if (tab[rowNumber][seatNumber] == 'B') {
+                            System.out.println("That ticket has already been purchased!");
+                        } else {
+                            tab[rowNumber][seatNumber] = 'B';
+
+                            if (totalSeats <= 60) {
+                                System.out.println("Ticket price: $10");
+                                income += 10;
+
+                            } else {
+                                if (row / 2 >= rowNumber) {
+                                    System.out.println("Ticket price: $10");
+                                    income += 10;
+                                } else {
+                                    System.out.println("Ticket price: $8");
+                                    income += 8;
+                                }
+                                tickets += 1;
+
+                            }
+                            change = false;
+                        }
+                    }
+                    break;
+
+                default:
+                    System.out.println("Input number from 0 to 3");
+                    break;
+            }
+        } while (x != 0);
+
+    }
+}
